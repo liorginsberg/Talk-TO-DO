@@ -2,4 +2,10 @@
 
     <string name="app_name">Talk TO-DO</string>
 
+    <string name="add_task">Add Task</string>
+
+    <string name="add">Add</string>
+
+    <string name="new_task_hint">new task...</string>
+
 </resources>
