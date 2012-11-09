@@ -15,8 +15,10 @@ public final class R {
         public static final int ic_action_search=0x7f020001;
     }
     public static final class id {
-        public static final int button1=0x7f060001;
+        public static final int btnAddTaskSimple=0x7f060002;
+        public static final int btnReturnTask=0x7f060001;
         public static final int edAddTaskSimple=0x7f060000;
+        public static final int lvMainTaskList=0x7f060003;
     }
     public static final class layout {
         public static final int activity_add_task_simple=0x7f030000;
