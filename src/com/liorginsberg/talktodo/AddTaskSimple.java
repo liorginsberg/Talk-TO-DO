@@ -10,10 +10,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class AddTaskSimple extends Activity {
+
 	private EditText etAddTaskSimple;
 	private Button btnReturnTask;
 
-	//THATS WORNG
+	//THATS WORNG ah?
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
