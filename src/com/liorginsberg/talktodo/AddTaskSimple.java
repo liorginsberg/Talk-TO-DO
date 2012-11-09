@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.view.Menu;
 
 public class AddTaskSimple extends Activity {
-	//THATS WORNG
+	//THATS WORNG ah?
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
