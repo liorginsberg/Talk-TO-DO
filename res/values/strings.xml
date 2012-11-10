@@ -8,4 +8,8 @@
 
     <string name="new_task_hint">new task...</string>
 
+    <string name="remove_listitem">Remove</string>
+
+    <string name="done">Done</string>
+
 </resources>

@@ -14,8 +14,6 @@ public class AddTaskSimple extends Activity {
 	private EditText etAddTaskSimple;
 	private Button btnReturnTask;
 
-	//THATS WORNG ah?
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
