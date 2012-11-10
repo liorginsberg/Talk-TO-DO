@@ -10,10 +10,16 @@
         android:layout_height="wrap_content"
         android:text="@string/add" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/note_top" />
+
     <ListView
         android:id="@+id/lvMainTaskList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:background="@drawable/note_back" >
     </ListView>
 
 </LinearLayout>
