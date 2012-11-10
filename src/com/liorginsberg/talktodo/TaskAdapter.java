@@ -41,7 +41,7 @@ class TaskAdapter extends ArrayAdapter<Task> {
 
 		    Toast.makeText(context,
 			    "You Are done with: " + tasks.get(pos).getTitle(),
-			    Toast.LENGTH_LONG);
+			    Toast.LENGTH_LONG).show();
 
 		}
 	    });
