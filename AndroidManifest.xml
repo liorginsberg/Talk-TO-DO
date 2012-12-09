@@ -21,8 +21,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddTaskSimple"
-            android:label="@string/add_task" >
+            android:name=".AddTaskDialog"
+            android:label="@string/add_task"
+            android:theme="@android:style/Theme.Holo.Dialog" >
         </activity>
     </application>
 

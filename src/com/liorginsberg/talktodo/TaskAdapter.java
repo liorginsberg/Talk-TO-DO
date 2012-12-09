@@ -1,34 +1,45 @@
 package com.liorginsberg.talktodo;
 
-import java.util.ArrayList;
-
 import android.content.Context;
+import android.util.Log;
 import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnTouchListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 class TaskAdapter extends ArrayAdapter<Task> {
 
-	private ArrayList<Task> tasks;
+	private TaskList taskList;
+	
+	private enum TaskPopupMenu {REMOVE, EDIT, OPEN};
 
-	public TaskAdapter(Context context, int textViewResourceId, ArrayList<Task> tasks) {
-		super(context, textViewResourceId, tasks);
-		this.tasks = tasks;
+	Context context;
+
+	protected GestureDetector gt;
+
+	public TaskAdapter(Context context, int textViewResourceId) {
+		super(context, textViewResourceId, TaskList.getInstance(context).getTasks());
+		this.context = context;
+		this.taskList = TaskList.getInstance(context);
+
 	}
 
-	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder holder;
-
+	public View getView(final int position, View convertView, ViewGroup parent) {
+		final ViewHolder holder;
+		final Task t = TaskList.getInstance(context).getTasks().get(position);
 		if (convertView == null) {
 			LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(R.layout.tasklist_item, null);
+
 			holder = new ViewHolder();
 			holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTaskTitle);
 			holder.chbDone = (CheckBox) convertView.findViewById(R.id.chbDone);
@@ -38,8 +49,25 @@ class TaskAdapter extends ArrayAdapter<Task> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
+		holder.chbDone.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-		holder.tvTitle.setText(tasks.get(position).getTitle());
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked) {
+					for (Task task : taskList.getTasks()) {
+						task.setChecked(false);
+					}
+				}
+				t.setChecked(isChecked);
+				notifyDataSetChanged();
+
+			}
+		});
+
+		holder.tvTitle.setText(t.getTitle());
+		convertView.setOnLongClickListener(new OnItemLongClickListener(position));
+		boolean isChecked = t.isChecked();
+		holder.chbDone.setChecked(isChecked);
+		holder.chbDone.setTag(position);
 		return convertView;
 	}
 
@@ -48,45 +76,50 @@ class TaskAdapter extends ArrayAdapter<Task> {
 		CheckBox chbDone;
 	}
 
-	private final OnTouchListener listItemOnTouchListener = new OnTouchListener() {
-		
-		public boolean onTouch(View v, MotionEvent event) {
-			return false;
-		}
-	};
-	
-	private final OnGestureListener listGestureListener = new OnGestureListener() {
+	class OnItemLongClickListener implements OnLongClickListener {
 
-		public boolean onDown(MotionEvent e) {
-			// TODO Auto-generated method stub
-			return false;
+		private int position;
+
+		public OnItemLongClickListener(int position) {
+			this.position = position;
 		}
 
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			// TODO Auto-generated method stub
+		public boolean onLongClick(View v) {
+			Log.i("LONG", "pressed " + position);
+			showPopupMenu(v, position);
 			return false;
 		}
 
-		public void onLongPress(MotionEvent e) {
-			// TODO Auto-generated method stub
+		private void showPopupMenu(View v, final int position){
 			
-		}
+			PopupMenu popupMenu = new PopupMenu(context, v);
+			popupMenu.getMenuInflater().inflate(R.menu.item_popup_menu, popupMenu.getMenu());
+			  
+			popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
-		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			// TODO Auto-generated method stub
-			return false;
-		}
+				public boolean onMenuItemClick(MenuItem item) {
+					TaskPopupMenu itemClicked = TaskPopupMenu.valueOf(item.getTitle().toString().toUpperCase()); 
+					switch (itemClicked) {
+					case REMOVE:
+						if(TaskList.getInstance(context).removeTask(position) == 1) {
+							notifyDataSetChanged();
+						} else {
+							Toast.makeText(context, "Could not remove Task from list", Toast.LENGTH_LONG).show();
+						}
+						break;
+					case EDIT:
+						Toast.makeText(context, "Edit Not Supported yet, wait for next version!", Toast.LENGTH_LONG).show();
+					case OPEN:
+						Toast.makeText(context, "Open Not Supported yet, wait for next version!", Toast.LENGTH_LONG).show();
+					default:
+						break;
+					}
+					
+					return true;
+				}
+			});
 
-		public void onShowPress(MotionEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		public boolean onSingleTapUp(MotionEvent e) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-	};
-
+			popupMenu.show();
+		} 
+	}
 }

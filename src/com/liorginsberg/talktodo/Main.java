@@ -1,7 +1,5 @@
 package com.liorginsberg.talktodo;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,13 +7,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class Main extends Activity {
 
     private TaskAdapter taskAdapter;
     
-    protected static final int ADD_TASK_SIMPLE = 100;
+    protected static final int ADD_TASK_REQUEST_CODE = 100;
 	private Button tbnAddTaskSimple;
 	private ListView lvTasks;
 
@@ -23,12 +20,12 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+      
+        TaskList.getInstance(this).getAllTasksFromDB();
+        
         lvTasks = (ListView) findViewById(R.id.lvMainTaskList);
-        ArrayList<Task> tasksList = new ArrayList<Task>();
-        for (int i = 1; i < 21; i++) {
-	    tasksList.add(new Task("Task long text to see what it does when out of bounds nunber "+ i));
-	}
-        taskAdapter = new TaskAdapter( this, R.layout.tasklist_item, tasksList);
+
+        taskAdapter = new TaskAdapter( this, R.layout.tasklist_item);
        
         lvTasks.setAdapter(taskAdapter);
         
@@ -36,8 +33,7 @@ public class Main extends Activity {
         tbnAddTaskSimple.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				Intent intent = new Intent(Main.this, AddTaskSimple.class);
-				startActivityForResult(intent, ADD_TASK_SIMPLE);
+				showAddDialog();
 			}
 		});
         
@@ -45,9 +41,16 @@ public class Main extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode == RESULT_OK && requestCode == ADD_TASK_SIMPLE) {
-			Toast.makeText(this, "Task Added: "+ data.getStringExtra("newTask"), Toast.LENGTH_LONG).show();
+		if (requestCode == ADD_TASK_REQUEST_CODE && resultCode == RESULT_OK) {
+			taskAdapter.notifyDataSetChanged();
 		}
+	}
+	
+	private void showAddDialog() {
+		Intent addTaskIntent = new Intent();
+		addTaskIntent.setClass(this, AddTaskDialog.class);
+		startActivityForResult(addTaskIntent, ADD_TASK_REQUEST_CODE);
+
 	}
 	
 	

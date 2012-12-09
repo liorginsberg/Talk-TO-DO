@@ -12,4 +12,24 @@
 
     <string name="done">Done</string>
 
+    <string name="myname">myName</string>
+
+    <string name="new_task_title">Title</string>
+
+    <string name="new_task_description">Description</string>
+
+    <string name="new_task_date">Date</string>
+
+    <string name="open_date_dialog">open date dialog</string>
+
+    <string name="new_task_time">Time</string>
+
+    <string name="click_on_the_icon">click on the icon</string>
+
+    <string name="open_time_dialog">open time dialog</string>
+
+    <string name="cancel">Cancel</string>
+
+    <string name="save">Save</string>
+
 </resources>
