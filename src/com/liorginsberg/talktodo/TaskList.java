@@ -1,6 +1,7 @@
 package com.liorginsberg.talktodo;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -32,9 +33,10 @@ public class TaskList {
 
 	
 
-	public void addTask(String title, String desc, Date date, boolean isCrossed, boolean isChecked){
-		int task_id = (int) taskDB.open().insertTask(title, desc);
-		tasks.add(new Task(task_id, title, desc, date, isCrossed, isChecked));
+	public int addTask(String title, String desc, String from, String to, int isChecked, int isCrossed){
+		int task_id = (int) taskDB.open().insertTask(title, desc, from, to, isChecked, isCrossed);
+		tasks.add(new Task(task_id, title, desc, from, to, isChecked, isCrossed));
+		return task_id;
 	}
 	
 	public int removeTask(int pos) {
@@ -56,7 +58,7 @@ public class TaskList {
 	}
 	public void populateListWithRandomTasks(int amount) {
 		for (int i = 0; i < amount; i++) {
-			tasks.add(new Task(i ,"auto generated task " + i, "desc for " + i, new Date(), false, false));
+			tasks.add(new Task(i ,"auto generated task " + i, "desc for " + i, "" , "", 0, 1));
 		}
 	}
 }

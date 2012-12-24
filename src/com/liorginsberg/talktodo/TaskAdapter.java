@@ -43,6 +43,7 @@ class TaskAdapter extends ArrayAdapter<Task> {
 			holder = new ViewHolder();
 			holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTaskTitle);
 			holder.chbDone = (CheckBox) convertView.findViewById(R.id.chbDone);
+			holder.tvDate = (TextView) convertView.findViewById(R.id.tvTaskDate);
 
 			convertView.setTag(holder);
 
@@ -54,19 +55,22 @@ class TaskAdapter extends ArrayAdapter<Task> {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked) {
 					for (Task task : taskList.getTasks()) {
-						task.setChecked(false);
+						task.setChecked(0);
 					}
 				}
-				t.setChecked(isChecked);
+				t.setChecked(1);
 				notifyDataSetChanged();
 
 			}
 		});
 
 		holder.tvTitle.setText(t.getTitle());
+		holder.tvDate.setText(t.getFromTo());
+
 		convertView.setOnLongClickListener(new OnItemLongClickListener(position));
-		boolean isChecked = t.isChecked();
-		holder.chbDone.setChecked(isChecked);
+		int isChecked = t.isChecked();
+		
+		holder.chbDone.setChecked(isChecked == 0 ? false : true);
 		holder.chbDone.setTag(position);
 		return convertView;
 	}
@@ -74,6 +78,7 @@ class TaskAdapter extends ArrayAdapter<Task> {
 	static class ViewHolder {
 		TextView tvTitle;
 		CheckBox chbDone;
+		TextView tvDate;
 	}
 
 	class OnItemLongClickListener implements OnLongClickListener {
