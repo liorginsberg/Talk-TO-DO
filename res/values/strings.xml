@@ -29,5 +29,7 @@
     <string name="cancel_btn">cancel_btn</string>
     <string name="note_top_image">note_top_image</string>
     <string name="remind_me">Remind Me</string>
+    <string name="fetch_task">fetch_task</string>
+    <string name="title_activity_calander">Calander</string>
 
 </resources>

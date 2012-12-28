@@ -1,7 +1,18 @@
 package com.liorginsberg.talktodo;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Locale;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -12,6 +23,7 @@ import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -25,6 +37,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -46,6 +59,8 @@ public class AddTaskActivity extends Activity {
 
 	private MyGestureDetector myGestureDetector;
 	private MyOnGestureListener myOnGestureListener;
+	private ImageButton btnFetch;
+	private ProgressBar waitSpinner;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +77,8 @@ public class AddTaskActivity extends Activity {
 		spTimeFrom = (EditText) findViewById(R.id.spTimeFrom);
 		spDateTo = (EditText) findViewById(R.id.spDateTo);
 		spTimeTo = (EditText) findViewById(R.id.spTimeTo);
+
+		waitSpinner = (ProgressBar) findViewById(R.id.pbFetch);
 
 		spDateFrom.setKeyListener(null);
 		spTimeFrom.setKeyListener(null);
@@ -102,6 +119,7 @@ public class AddTaskActivity extends Activity {
 				String toString = spDateTo.getText().toString() + " " + spTimeTo.getText().toString();
 
 				if (!taskTitle.isEmpty()) {
+
 					int task_id = TaskList.getInstance(getApplicationContext()).addTask(taskTitle, taskDesc, fromString, toString, 0, 0);
 					if (chbRemindMe.isChecked()) {
 						Intent intent = new Intent(AddTaskActivity.this, MyBroadcastReceiver.class);
@@ -111,8 +129,10 @@ public class AddTaskActivity extends Activity {
 						AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 						Toast.makeText(
 								getApplicationContext(),
-								"Set remider for: " + fromCalendar.get(Calendar.DAY_OF_MONTH) + "/" + (fromCalendar.get(Calendar.MONTH)+1) + "  "
-										+ fromCalendar.get(Calendar.HOUR_OF_DAY) + ":" + fromCalendar.get(Calendar.MINUTE), Toast.LENGTH_SHORT)
+								"Set remider for: "
+										+ String.format(Locale.getDefault(), "%02d/%02d/%02d %02d:%02d", fromCalendar.get(Calendar.DAY_OF_MONTH),
+												fromCalendar.get(Calendar.MONTH) + 1, fromCalendar.get(Calendar.YEAR),
+												fromCalendar.get(Calendar.HOUR_OF_DAY), fromCalendar.get(Calendar.MINUTE)), Toast.LENGTH_SHORT)
 								.show();
 						alarmManager.set(AlarmManager.RTC_WAKEUP, fromCalendar.getTimeInMillis(), pendingIntent);
 					}
@@ -132,6 +152,21 @@ public class AddTaskActivity extends Activity {
 				finish();
 			}
 		});
+
+		btnFetch = (ImageButton) findViewById(R.id.btnFetch);
+		btnFetch.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				try {
+					URL url = new URL("http://mobile1-tasks-dispatcher.herokuapp.com/task/random");
+					new GetFromWebTask().execute(url);
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+
 	}
 
 	private class MyOnSetDateListener implements OnDateSetListener {
@@ -356,5 +391,52 @@ public class AddTaskActivity extends Activity {
 			myOnGestureListener.setView(v);
 		}
 
+	}
+
+	private class GetFromWebTask extends AsyncTask<URL, Integer, String> {
+
+		@Override
+		protected void onPreExecute() {
+			waitSpinner.setVisibility(ProgressBar.VISIBLE);
+		}
+
+		@Override
+		protected String doInBackground(URL... urls) {
+			String res = "";
+			try {
+				res = getFromWeb(urls[0]);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return res;
+		}
+
+		private String getFromWeb(URL url) throws Exception {
+			HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+			String response;
+			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+			InputStreamReader inReader = new InputStreamReader(in);
+			BufferedReader bufferedReader = new BufferedReader(inReader);
+			StringBuilder responseBuilder = new StringBuilder();
+			for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine()) {
+				responseBuilder.append(line);
+			}
+			response = responseBuilder.toString();
+
+			return response;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			JSONObject taskJASON = null;
+			try {
+				taskJASON = new JSONObject(result);
+				etAddTaskTitle.setText(taskJASON.getString("topic"));
+				etAddTaskDesc.setText(taskJASON.getString("description"));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			waitSpinner.setVisibility(ProgressBar.INVISIBLE);
+		}
 	}
 }

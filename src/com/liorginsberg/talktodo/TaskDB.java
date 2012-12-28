@@ -59,8 +59,11 @@ public class TaskDB {
 		cv.put(KEY_TASK_DATE_TO, date_to);
 		cv.put(KEY_TASK_CHECKED,checked);
 		cv.put(KEY_TASK_CROSSED, crossed);
+		open();
+		long idFromDb = tasksDB.insert(TASKS_TABLE, null, cv);
+		close();
 		
-		return tasksDB.insert(TASKS_TABLE, null, cv);
+		return idFromDb;
 	}
 	
 	public int removeTask(long taskID) {
@@ -78,11 +81,9 @@ public class TaskDB {
 	
 	public List<Task> getAll() {
 		ArrayList<Task> tasksList = new ArrayList<Task>();
+		open();
+		Cursor c = tasksDB.query(TASKS_TABLE, columns, null, null, null, null, null);
 		try{
-			open();
-			
-			Cursor c = tasksDB.query(TASKS_TABLE, columns, null, null, null, null, null);
-			
 			int iRow = c.getColumnIndex(KEY_ROWID);
 			int iTitle = c.getColumnIndex(KEY_TASK_TITLE);
 			int iDesc = c.getColumnIndex(KEY_TASK_DESC);
@@ -97,6 +98,7 @@ public class TaskDB {
 		} catch (SQLException e) {
 			Toast.makeText(context, "Could Not open database error", Toast.LENGTH_LONG).show();
 		}finally {
+			c.close();
 			close();
 		}
 		return tasksList;

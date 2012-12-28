@@ -7,7 +7,9 @@
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="15" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:icon="@drawable/app_icon"
@@ -23,16 +25,24 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.liorginsberg.talktodo.AddTaskDialog"
-            android:label="@string/add_task"
-            android:theme="@android:style/Theme.Holo.Dialog" >
-        </activity>
-           <activity
             android:name="com.liorginsberg.talktodo.AddTaskActivity"
-            android:label="@string/add_task">
+            android:label="@string/add_task"
+            android:windowSoftInputMode="stateHidden" >
         </activity>
-          <receiver android:name="MyBroadcastReceiver" >
+        <activity
+            android:name="com.liorginsberg.talktodo.Prefrences"
+            android:label="Settings" >
+        </activity>
+
+        <receiver android:name="com.liorginsberg.talktodo.MyBroadcastReceiver" >
         </receiver>
+
+        <service android:name="com.liorginsberg.talktodo.TaskService" />
+
+        <activity
+            android:name="com.liorginsberg.talktodo.Calander"
+            android:label="@string/title_activity_calander" >
+        </activity>
     </application>
 
 </manifest>

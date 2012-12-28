@@ -3,6 +3,7 @@ package com.liorginsberg.talktodo;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -16,9 +17,11 @@ public class Main extends Activity {
     private TaskAdapter taskAdapter;
     
     protected static final int ADD_TASK_REQUEST_CODE = 100;
-	private ImageButton tbnAddTaskSimple;
+	private ImageButton btnAddTaskSimple;
 	private ImageButton ibCal;
+	private ImageButton ibSet;
 	private ListView lvTasks;
+	
 
 	@Override			
     public void onCreate(Bundle savedInstanceState) {
@@ -30,19 +33,30 @@ public class Main extends Activity {
         
         lvTasks = (ListView) findViewById(R.id.lvMainTaskList);
 
-        taskAdapter = new TaskAdapter( this, R.layout.tasklist_item);
+        taskAdapter = TaskAdapter.getInstance(this, R.layout.tasklist_item);
        
-        lvTasks.setAdapter(taskAdapter);
+        View v = getLayoutInflater().inflate(R.layout.list_footer, null);
+        lvTasks.addFooterView(v);
         
+        lvTasks.setAdapter(taskAdapter);
+        ibSet = (ImageButton)findViewById(R.id.btnSet);
+        ibSet.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				Intent p = new Intent(Main.this, Prefrences.class);
+				startActivity(p);
+			}
+		});
         ibCal = (ImageButton) findViewById(R.id.btnCalender);
         ibCal.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
-				Toast.makeText(Main.this, "Wait for next release!", Toast.LENGTH_SHORT).show();
+				Intent calIntent = new Intent(Main.this, Calander.class);
+				startActivity(calIntent);
 			}
 		});
-        tbnAddTaskSimple = (ImageButton) findViewById(R.id.btnAddTaskSimple);
-        tbnAddTaskSimple.setOnClickListener(new OnClickListener() {
+        btnAddTaskSimple = (ImageButton) findViewById(R.id.btnAddTaskSimple);
+        btnAddTaskSimple.setOnClickListener(new OnClickListener() {
 			
 			public void onClick(View v) {
 				Intent addTaskIntent = new Intent();

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fech_intervals_entries">
+        <item>10 Seconds (test purposes)</item>
+        <item>1 Minute</item>
+        <item>15 Minutes</item>
+        <item>24 Hours</item>
+    </string-array>
+    <string-array name="fech_intervals_value">
+        <item>10</item>
+        <item>60</item>
+        <item>900</item>
+        <item>86400</item>
+    </string-array>
+</resources>

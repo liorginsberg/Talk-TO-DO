@@ -15,6 +15,7 @@ public class Task {
 	private int isCrossed;
 	private int isChecked;
 
+
 	
 	public Task(int taskID, String title, String desc, String from, String to, int isCrossed, int isChecked) {
 		this.taskID = taskID;
@@ -80,7 +81,6 @@ public class Task {
 	public String getFromTo() {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:dd", Locale.US); 
 		StringBuilder sb = new StringBuilder();
-		String a = String.valueOf(calendarFrom.get(Calendar.MONTH));
 		String test = sdf.format(calendarFrom.getTime());
 		sb.append(test);
 		sb.append(" - ");

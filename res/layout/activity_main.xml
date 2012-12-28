@@ -24,12 +24,8 @@
         android:layout_below="@+id/top"
         android:background="@drawable/note_back"
         android:divider="@null"
-        android:dividerHeight="0dp" />
-    <View 
-        android:layout_width="fill_parent"
-        android:layout_height="70dp"
-        android:layout_below="@+id/lvTasks"/>
-
+        android:dividerHeight="0dp"
+         />
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/bottom_bar"
@@ -78,7 +74,7 @@
             android:src="@drawable/cal" />
 
         <ImageButton
-            android:id="@+id/btnAddTaskSimple"
+            android:id="@+id/btnSet"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

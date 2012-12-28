@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="taskServiceCategory"
+        android:title="Task Service" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="fetchTask"
+            android:summary="Activate service to fetch task from the server automaticly"
+            android:title="Fetch Tasks" />
+
+        <ListPreference
+            android:summary="Set time between fetches"
+            android:title="Set Interval"
+            android:key="intervalFetchList"
+            android:defaultValue="86400"
+            android:entries="@array/fech_intervals_entries"
+            android:entryValues="@array/fech_intervals_value"/>
+    </PreferenceCategory>
+    
+
+</PreferenceScreen>

@@ -31,8 +31,6 @@ public class TaskList {
 		return tasks;
 	}
 
-	
-
 	public int addTask(String title, String desc, String from, String to, int isChecked, int isCrossed){
 		int task_id = (int) taskDB.open().insertTask(title, desc, from, to, isChecked, isCrossed);
 		tasks.add(new Task(task_id, title, desc, from, to, isChecked, isCrossed));

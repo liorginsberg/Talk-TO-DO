@@ -16,8 +16,10 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-class TaskAdapter extends ArrayAdapter<Task> {
+public class TaskAdapter extends ArrayAdapter<Task> {
 
+	private static TaskAdapter instance = null;
+	
 	private TaskList taskList;
 	
 	private enum TaskPopupMenu {REMOVE, EDIT, OPEN};
@@ -26,11 +28,18 @@ class TaskAdapter extends ArrayAdapter<Task> {
 
 	protected GestureDetector gt;
 
-	public TaskAdapter(Context context, int textViewResourceId) {
+	private TaskAdapter(Context context, int textViewResourceId) {
 		super(context, textViewResourceId, TaskList.getInstance(context).getTasks());
 		this.context = context;
 		this.taskList = TaskList.getInstance(context);
 
+	}
+	
+	public static TaskAdapter getInstance(Context context, int textViewResourceId) {
+		if(instance == null) {
+			instance = new TaskAdapter(context, textViewResourceId);
+		}
+		return instance;
 	}
 
 	public View getView(final int position, View convertView, ViewGroup parent) {

@@ -23,10 +23,11 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 		Notification notification = new Notification.Builder(context)
 				.setContentTitle(intent.getStringExtra("title"))
 				.setContentText(intent.getStringExtra("desc"))
-				.setSmallIcon(R.drawable.noti_icon)
+				.setSmallIcon(R.drawable.no1)
 				.setContentIntent(pendingIntent)
 				.setTicker("Just Reminding You!").build();
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		notification.defaults |= Notification.DEFAULT_SOUND;
 		notificationManager.notify(REMINDME_NOTIFICATION_ID, notification);
 		
 	}
