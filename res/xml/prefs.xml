@@ -11,13 +11,20 @@
             android:title="Fetch Tasks" />
 
         <ListPreference
-            android:summary="Set time between fetches"
-            android:title="Set Interval"
-            android:key="intervalFetchList"
             android:defaultValue="86400"
             android:entries="@array/fech_intervals_entries"
-            android:entryValues="@array/fech_intervals_value"/>
+            android:entryValues="@array/fech_intervals_value"
+            android:key="intervalFetchList"
+            android:summary="Every 24 Hours at 00:00"
+            android:title="Set Interval"
+            android:dependency="fetchTask" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="notifyNewTask"
+            android:summary="Notify when new task fetched"
+            android:title="Service Notifications"
+            android:dependency="fetchTask" />
     </PreferenceCategory>
-    
 
 </PreferenceScreen>
