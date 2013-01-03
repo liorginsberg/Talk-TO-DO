@@ -12,19 +12,28 @@
 
         <ListPreference
             android:defaultValue="86400"
+            android:dependency="fetchTask"
             android:entries="@array/fech_intervals_entries"
             android:entryValues="@array/fech_intervals_value"
             android:key="intervalFetchList"
             android:summary="Every 24 Hours at 00:00"
-            android:title="Set Interval"
-            android:dependency="fetchTask" />
+            android:title="Set Interval" />
 
         <CheckBoxPreference
             android:defaultValue="true"
+            android:dependency="fetchTask"
             android:key="notifyNewTask"
             android:summary="Notify when new task fetched"
-            android:title="Service Notifications"
-            android:dependency="fetchTask" />
+            android:title="Service Notifications" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="taskBackupCategory"
+        android:title="Backup">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="backupTasks"
+            android:summary="Backup to Remote Database"
+            android:title="Backup Tasks"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

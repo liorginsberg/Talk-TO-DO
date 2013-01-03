@@ -38,7 +38,6 @@ public class TaskService extends IntentService {
 			url = new URL("http://mobile1-tasks-dispatcher.herokuapp.com/task/random");
 			new addTaskFromWeb().execute(url);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -88,7 +87,7 @@ public class TaskService extends IntentService {
 			try {
 				taskJASON = new JSONObject(result);
 				topic = taskJASON.getString("topic");
-				TaskList.getInstance(getApplicationContext()).addTask(topic, taskJASON.getString("description"), from, to, 0, 0);
+				TaskList.getInstance(getApplicationContext()).addTask(topic, taskJASON.getString("description"), from, to, "hashlosha 4, tel-aviv", 0, true);
 				TaskAdapter.getInstance(getApplicationContext(), R.layout.tasklist_item).notifyDataSetChanged();
 			} catch (JSONException e) {
 				e.printStackTrace();

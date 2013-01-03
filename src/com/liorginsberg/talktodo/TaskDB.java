@@ -14,21 +14,23 @@ import android.widget.Toast;
 
 public class TaskDB {
 
+	private final String TAG = "TASKDB";
+	
 	public static final String KEY_ROWID = "task_id";
 	public static final String KEY_TASK_TITLE = "task_title";
 	public static final String KEY_TASK_DESC = "task_desc";
 	public static final String KEY_TASK_DATE_FROM = "task_date_from";
 	public static final String KEY_TASK_DATE_TO = "task_date_to";
+	public static final String KEY_TASK_LOCATION = "task_location";
 	public static final String KEY_TASK_CHECKED = "task_checked";
-	public static final String KEY_TASK_CROSSED = "task_crossed";
 	
 
 	private static final String DATABASE_NAME = "TaskDB";
 	private static final String TASKS_TABLE = "TasksTable";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 
 
-	private String[] columns = {KEY_ROWID, KEY_TASK_TITLE, KEY_TASK_DESC, KEY_TASK_DATE_FROM, KEY_TASK_DATE_TO, KEY_TASK_CHECKED, KEY_TASK_CROSSED};
+	private String[] columns = {KEY_ROWID, KEY_TASK_TITLE, KEY_TASK_DESC, KEY_TASK_DATE_FROM, KEY_TASK_DATE_TO, KEY_TASK_LOCATION, KEY_TASK_CHECKED};
 	
 	private final Context context;
 	private SQLiteDatabase tasksDB;
@@ -50,14 +52,14 @@ public class TaskDB {
 		tasksDBHelper.close();
 	}
 	
-	public long insertTask(String title, String desc, String date_from, String date_to, int checked, int crossed) {
+	public long insertTask(String title, String desc, String date_from, String date_to, String location, int checked) {
 		ContentValues cv = new ContentValues();
 		cv.put(KEY_TASK_TITLE, title);
 		cv.put(KEY_TASK_DESC, desc);
 		cv.put(KEY_TASK_DATE_FROM, date_from);
 		cv.put(KEY_TASK_DATE_TO, date_to);
+		cv.put(KEY_TASK_LOCATION, location);
 		cv.put(KEY_TASK_CHECKED,checked);
-		cv.put(KEY_TASK_CROSSED, crossed);
 		open();
 		long idFromDb = tasksDB.insert(TASKS_TABLE, null, cv);
 		close();
@@ -70,8 +72,9 @@ public class TaskDB {
 		try{
 			open();
 			rowEffectedCount = tasksDB.delete(TASKS_TABLE, KEY_ROWID + "=" + taskID , null);
+			Log.i(TAG, "task with id=" + taskID + " was seccessfuly removed from database");
 		} catch (SQLException e) {
-			Log.i("SQLite", "Could not delete task " + taskID);
+			Log.i(TAG, "Could not delete task " + taskID);
 		} finally {
 			close();
 		}
@@ -88,11 +91,12 @@ public class TaskDB {
 			int iDesc = c.getColumnIndex(KEY_TASK_DESC);
 			int iFrom = c.getColumnIndex(KEY_TASK_DATE_FROM);
 			int iTo = c.getColumnIndex(KEY_TASK_DATE_TO);
+			int ilocation = c.getColumnIndex(KEY_TASK_LOCATION);
 			int iChecked = c.getColumnIndex(KEY_TASK_CHECKED);
-			int iCrossed = c.getColumnIndex(KEY_TASK_CROSSED);
+			
 			
 			for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
-				tasksList.add(new Task(c.getInt(iRow), c.getString(iTitle), c.getString(iDesc), c.getString(iFrom), c.getString(iTo), c.getInt(iChecked), c.getInt(iCrossed)));
+				tasksList.add(new Task(c.getInt(iRow), c.getString(iTitle), c.getString(iDesc), c.getString(iFrom), c.getString(iTo), c.getString(ilocation), c.getInt(iChecked)));
 			}
 		} catch (SQLException e) {
 			Toast.makeText(context, "Could Not open database error", Toast.LENGTH_LONG).show();
@@ -114,6 +118,39 @@ public class TaskDB {
 		}
 	}
 	
+	public boolean setDone(int task_id, int done) {
+		String whereClause = "task_id=" + task_id;
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_TASK_CHECKED, done);
+		open();
+		int rowCount = tasksDB.update(TASKS_TABLE, cv, whereClause, null);
+		close();
+		if(rowCount == 1) {
+			Log.i(TAG, "set task with id=" + task_id + " to " + (done == 0 ? "not done" : "done") );
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean updateTask(int task_id ,String title, String desc, String date_from, String date_to, String location,int checked) {
+		String whereClause = "task_id=" + task_id;
+		ContentValues cv = new ContentValues();
+		cv.put(KEY_TASK_TITLE, title);
+		cv.put(KEY_TASK_DESC, desc);
+		cv.put(KEY_TASK_DATE_FROM, date_from);
+		cv.put(KEY_TASK_DATE_TO, date_to);
+		cv.put(KEY_TASK_LOCATION, location);
+		cv.put(KEY_TASK_CHECKED,checked);
+		
+		open();
+		int rowCount = tasksDB.update(TASKS_TABLE, cv, whereClause, null);
+		close();
+		if(rowCount == 1) {
+			return true;
+		}
+		return false;
+	}
+	
 	private static class DBHelper extends SQLiteOpenHelper {
 
 		public DBHelper(Context context) {
@@ -127,9 +164,10 @@ public class TaskDB {
 					KEY_TASK_TITLE + " TEXT NOT NULL, " +
 					KEY_TASK_DESC + " TEXT, " +
 					KEY_TASK_DATE_FROM + " TEXT, " +
-					KEY_TASK_DATE_TO + " TEXT, " + 
-					KEY_TASK_CHECKED + " INTEGER, " +
-					KEY_TASK_CROSSED + " INTEGER)");
+					KEY_TASK_DATE_TO + " TEXT, " +
+					KEY_TASK_LOCATION + " TEXT, " +
+					KEY_TASK_CHECKED + " INTEGER)"); 
+
 		}
 
 		@Override
@@ -138,6 +176,8 @@ public class TaskDB {
 			onCreate(db);
 		}
 	}
+
+	
 
 	
 }

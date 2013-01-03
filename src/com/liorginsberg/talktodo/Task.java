@@ -12,12 +12,12 @@ public class Task {
 	private String desc;
 	private Calendar calendarFrom;
 	private Calendar calendarTo;
-	private int isCrossed;
+	private String location;
 	private int isChecked;
 
 
 	
-	public Task(int taskID, String title, String desc, String from, String to, int isCrossed, int isChecked) {
+	public Task(int taskID, String title, String desc, String from, String to, String location, int isChecked) {
 		this.taskID = taskID;
 		this.title = title;
 		this.desc = desc;
@@ -25,11 +25,11 @@ public class Task {
 		calendarFrom = stringDateToCalendar(from);
 		calendarTo = stringDateToCalendar(to);
 		
-		this.isCrossed = isCrossed;
+		this.location = location;
 		this.isChecked = isChecked;
 	}
 	
-	private Calendar stringDateToCalendar(String date) {
+	public static Calendar stringDateToCalendar(String date) {
 		 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US);
 		 Date d = null;
 		 try {
@@ -62,13 +62,6 @@ public class Task {
 		this.desc = desc;
 	}
 
-	public void setCrossed(int isCrossed) {
-		this.isCrossed = isCrossed;
-	}
-
-	public int isCrossed() {
-		return isCrossed;
-	}
 
 	public int isChecked() {
 		return isChecked;
@@ -86,5 +79,29 @@ public class Task {
 		sb.append(" - ");
 		sb.append(sdf.format(calendarTo.getTime()));
 		return sb.toString();
+	}
+	
+	public Calendar getCalendarFrom() {
+		return calendarFrom;
+	}
+
+	public void setCalendarFrom(Calendar calendarFrom) {
+		this.calendarFrom = calendarFrom;
+	}
+
+	public Calendar getCalendarTo() {
+		return calendarTo;
+	}
+
+	public void setCalendarTo(Calendar calendarTo) {
+		this.calendarTo = calendarTo;
+	}
+	
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 }

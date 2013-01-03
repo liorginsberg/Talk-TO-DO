@@ -67,16 +67,13 @@ public class AddTaskActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.advance_add_task);
 
-		fromCalendar = Calendar.getInstance();
-		toCalendar = Calendar.getInstance();
-
 		etAddTaskTitle = (EditText) findViewById(R.id.etAddTaskTitle);
 		etAddTaskDesc = (EditText) findViewById(R.id.etAddTaskDesc);
 		spDateFrom = (EditText) findViewById(R.id.spDateFrom);
 		spTimeFrom = (EditText) findViewById(R.id.spTimeFrom);
 		spDateTo = (EditText) findViewById(R.id.spDateTo);
 		spTimeTo = (EditText) findViewById(R.id.spTimeTo);
-
+		chbRemindMe = (CheckBox) findViewById(R.id.chbRemindMe);
 		waitSpinner = (ProgressBar) findViewById(R.id.pbFetch);
 
 		spDateFrom.setKeyListener(null);
@@ -85,19 +82,33 @@ public class AddTaskActivity extends Activity {
 		spTimeTo.setKeyListener(null);
 
 		etAddTaskTitle.requestFocus();
-
-		toCalendar.add(Calendar.HOUR_OF_DAY, 1);
-
+		
+		
+		//EDIT
+		final int position = getIntent().getIntExtra("position", -1);
+		if (position != -1) {
+			Task temp = TaskList.getInstance(getApplicationContext()).getTaskAt(position);
+			etAddTaskTitle.setText(temp.getTitle());
+			etAddTaskDesc.setText(temp.getDesc());
+			fromCalendar = temp.getCalendarFrom();
+			toCalendar = temp.getCalendarTo();
+			
+		}//ADD
+		else {
+			fromCalendar = Calendar.getInstance();
+			toCalendar = Calendar.getInstance();
+			toCalendar.add(Calendar.HOUR_OF_DAY, 1);
+		}
+		
 		spDateFrom.setText(String.format(Locale.getDefault(), "%02d/%02d/%02d", fromCalendar.get(Calendar.DAY_OF_MONTH),
 				fromCalendar.get(Calendar.MONTH) + 1, fromCalendar.get(Calendar.YEAR)));
-		spTimeFrom
-				.setText(String.format(Locale.getDefault(), "%02d:%02d", fromCalendar.get(Calendar.HOUR_OF_DAY), fromCalendar.get(Calendar.MINUTE)));
+		spTimeFrom.setText(String.format(Locale.getDefault(), "%02d:%02d", fromCalendar.get(Calendar.HOUR_OF_DAY),
+				fromCalendar.get(Calendar.MINUTE)));
 
 		spDateTo.setText(String.format(Locale.getDefault(), "%02d/%02d/%02d", toCalendar.get(Calendar.DAY_OF_MONTH),
 				toCalendar.get(Calendar.MONTH) + 1, toCalendar.get(Calendar.YEAR)));
 		spTimeTo.setText(String.format(Locale.getDefault(), "%02d:%02d", toCalendar.get(Calendar.HOUR_OF_DAY), toCalendar.get(Calendar.MINUTE)));
 
-		chbRemindMe = (CheckBox) findViewById(R.id.chbRemindMe);
 
 		myOnGestureListener = new MyOnGestureListener();
 		myGestureDetector = new MyGestureDetector(this, myOnGestureListener);
@@ -116,10 +127,14 @@ public class AddTaskActivity extends Activity {
 				String taskDesc = etAddTaskDesc.getText().toString();
 				String fromString = spDateFrom.getText().toString() + " " + spTimeFrom.getText().toString();
 				String toString = spDateTo.getText().toString() + " " + spTimeTo.getText().toString();
-
+				int task_id;
 				if (!taskTitle.isEmpty()) {
-
-					int task_id = TaskList.getInstance(getApplicationContext()).addTask(taskTitle, taskDesc, fromString, toString, 0, 0);
+					if(position == -1) {
+						task_id = TaskList.getInstance(getApplicationContext()).addTask(taskTitle, taskDesc, fromString, toString, "hashlosha 4, tel-vaiv", 0, true);
+					}else {
+						task_id = TaskList.getInstance(getApplicationContext()).getTaskAt(position).getTask_id();
+						TaskList.getInstance(getApplicationContext()).updateTask(position, task_id, taskTitle, taskDesc, fromString, toString, "hashlosh 4, tel-aviv", 0);
+					}
 					if (chbRemindMe.isChecked()) {
 						Intent intent = new Intent(AddTaskActivity.this, MyBroadcastReceiver.class);
 						intent.putExtra("title", taskTitle);

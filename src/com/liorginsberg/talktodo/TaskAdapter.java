@@ -1,6 +1,8 @@
 package com.liorginsberg.talktodo;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -19,10 +21,12 @@ import android.widget.Toast;
 public class TaskAdapter extends ArrayAdapter<Task> {
 
 	private static TaskAdapter instance = null;
-	
+
 	private TaskList taskList;
 	
-	private enum TaskPopupMenu {REMOVE, EDIT, OPEN};
+	private enum TaskPopupMenu {
+		REMOVE, EDIT, OPEN
+	};
 
 	Context context;
 
@@ -34,9 +38,9 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 		this.taskList = TaskList.getInstance(context);
 
 	}
-	
+
 	public static TaskAdapter getInstance(Context context, int textViewResourceId) {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new TaskAdapter(context, textViewResourceId);
 		}
 		return instance;
@@ -62,12 +66,16 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 		holder.chbDone.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked) {
-					for (Task task : taskList.getTasks()) {
-						task.setChecked(0);
+				boolean setOnDB = false;
+				if(isChecked) {
+					setOnDB = TaskList.getInstance(context).setDone(t.getTask_id(), 1);
+					if(setOnDB){
+						t.setChecked(1);
 					}
+				} else {
+					TaskList.getInstance(context).setDone(t.getTask_id(), 0);
+					t.setChecked(0);
 				}
-				t.setChecked(1);
 				notifyDataSetChanged();
 
 			}
@@ -77,10 +85,11 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 		holder.tvDate.setText(t.getFromTo());
 
 		convertView.setOnLongClickListener(new OnItemLongClickListener(position));
+
 		int isChecked = t.isChecked();
+		boolean ch = isChecked == 0 ? false : true;
+		holder.chbDone.setChecked(ch);
 		
-		holder.chbDone.setChecked(isChecked == 0 ? false : true);
-		holder.chbDone.setTag(position);
 		return convertView;
 	}
 
@@ -104,36 +113,40 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 			return false;
 		}
 
-		private void showPopupMenu(View v, final int position){
-			
+		private void showPopupMenu(View v, final int position) {
+
 			PopupMenu popupMenu = new PopupMenu(context, v);
 			popupMenu.getMenuInflater().inflate(R.menu.item_popup_menu, popupMenu.getMenu());
-			  
+
 			popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
 				public boolean onMenuItemClick(MenuItem item) {
-					TaskPopupMenu itemClicked = TaskPopupMenu.valueOf(item.getTitle().toString().toUpperCase()); 
+					TaskPopupMenu itemClicked = TaskPopupMenu.valueOf(item.getTitle().toString().toUpperCase());
 					switch (itemClicked) {
 					case REMOVE:
-						if(TaskList.getInstance(context).removeTask(position) == 1) {
+						if (TaskList.getInstance(context).removeTask(position) == 1) {
 							notifyDataSetChanged();
 						} else {
 							Toast.makeText(context, "Could not remove Task from list", Toast.LENGTH_LONG).show();
 						}
 						break;
 					case EDIT:
-						Toast.makeText(context, "Edit Not Supported yet, wait for next version!", Toast.LENGTH_LONG).show();
+						Intent editTaskIntent = new Intent();
+						editTaskIntent.setClass(context, AddTaskActivity.class);
+						editTaskIntent.putExtra("position", position);
+						((Activity) context).startActivityForResult(editTaskIntent, Main.EDIT_TASK_REQUEST_CODE);
+						break;
 					case OPEN:
 						Toast.makeText(context, "Open Not Supported yet, wait for next version!", Toast.LENGTH_LONG).show();
 					default:
 						break;
 					}
-					
+
 					return true;
 				}
 			});
 
 			popupMenu.show();
-		} 
+		}
 	}
 }
